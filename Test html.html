@@ -95,29 +95,18 @@
         }
 
     })
-         
-    /*var list = [
-        {"project":"Uno", "employee":"Tizio", "date":"", "Hours":"3"},
-        {"project":"Uno", "employee":"Caio", "date":"","Hours":"5"},
-        {"project":"Due", "employee":"Quello", "date":"","Hours":"8"}
-    ];*/
      
     function ShowResponse(returnValue) {
         var cols = [];
-        cols.push(f.value);
-        cols.push(s.value);
-        cols.push(t.value);
+        cols.push("id");
+
+        if(f.value != "none")
+          cols.push(f.value);
+        if(s.value != "none")
+          cols.push(s.value);
+        if(t.value != "none")
+          cols.push(t.value);
         cols.push("hours");
-         
-        /*for (var i = 0; i < list.length; i++) {
-            for (var k in list[i]) {
-                if (cols.indexOf(k) === -1) {
-                     
-                    // Push all keys to the array
-                    cols.push(k);
-                }
-            }
-        }*/
          
         // Create a table element
         var table = document.createElement("table");

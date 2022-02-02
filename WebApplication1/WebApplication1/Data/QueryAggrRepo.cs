@@ -35,6 +35,7 @@ namespace WebApplication1.Helpers
                          .GroupBy(x => x.Project)
                          .Select(x => new
                          {
+                             Id = x.Select(y => y.Id),
                              Project = x.Key,
                              Hours = x.Sum(y => y.Hours)
 
@@ -43,6 +44,7 @@ namespace WebApplication1.Helpers
                     foreach (var r in resultP)
                     {
                         TableAggregations element = new TableAggregations();
+                        element.Id = r.Id.FirstOrDefault();
                         element.Project = r.Project;
                         element.Hours = r.Hours;
 
@@ -54,6 +56,7 @@ namespace WebApplication1.Helpers
                          .GroupBy(x => x.Employee)
                          .Select(x => new
                          {
+                             Id = x.Select(y => y.Id),
                              Employee = x.Key,
                              Hours = x.Sum(y => y.Hours)
 
@@ -62,6 +65,7 @@ namespace WebApplication1.Helpers
                     foreach (var r in resultE)
                     {
                         TableAggregations element = new TableAggregations();
+                        element.Id = r.Id.FirstOrDefault();
                         element.Employee = r.Employee;
                         element.Hours = r.Hours;
 
@@ -73,6 +77,7 @@ namespace WebApplication1.Helpers
                          .GroupBy(x => x.Date)
                          .Select(x => new
                          {
+                             Id = x.Select(y => y.Id),
                              Date = x.Key,
                              Hours = x.Sum(y => y.Hours)
 
@@ -81,6 +86,7 @@ namespace WebApplication1.Helpers
                     foreach (var r in resultD)
                     {
                         TableAggregations element = new TableAggregations();
+                        element.Id = r.Id.FirstOrDefault();
                         element.Date = r.Date;
                         element.Hours = r.Hours;
 
@@ -156,6 +162,7 @@ namespace WebApplication1.Helpers
                         }), o => o.SecondTable.BigTable.Date, u => u.Date, (o, u) => new { ThirdJoin = o, EndJoin = u })
                         .Select(x => new
                         {
+                            Id = x.ThirdJoin.SecondTable.BigTable.Id,
                             Project = x.ThirdJoin.SecondTable.FirstJoin.Project,
                             Employee = x.ThirdJoin.SecondJoin.Employee,
                             Date = x.EndJoin.Date,
@@ -168,6 +175,7 @@ namespace WebApplication1.Helpers
             foreach (var r in result)
             {
                 TableAggregations element = new TableAggregations();
+                element.Id = r.First().Id;
                 element.Project = r.First().Project;
                 element.Employee = r.First().Employee;
                 element.Date = r.First().Date;
@@ -199,6 +207,7 @@ namespace WebApplication1.Helpers
 
                         }), o => o.BigTable.Employee, u => u.Employee, (o, u) => new { SecondJoin = o, EndJoin = u }).Select(x => new
                         {
+                            Id = x.SecondJoin.BigTable.Id,
                             Project = x.SecondJoin.FirstJoin.Project,
                             Employee = x.EndJoin.Employee,
                             Hours = x.SecondJoin.BigTable.Hours
@@ -210,6 +219,7 @@ namespace WebApplication1.Helpers
             foreach (var r in result)
             {
                 TableAggregations element = new TableAggregations();
+                element.Id = r.First().Id;
                 element.Project = r.First().Project;
                 element.Employee = r.First().Employee;
                 element.Hours = r.Sum(y => y.Hours);
@@ -239,6 +249,7 @@ namespace WebApplication1.Helpers
 
                         }), o => o.BigTable.Date, u => u.Date, (o, u) => new { SecondJoin = o, EndJoin = u }).Select(x => new
                         {
+                            Id = x.SecondJoin.BigTable.Id,
                             Project = x.SecondJoin.FirstJoin.Project,
                             Date = x.EndJoin.Date,
                             Hours = x.SecondJoin.BigTable.Hours
@@ -250,6 +261,7 @@ namespace WebApplication1.Helpers
             foreach (var r in result)
             {
                 TableAggregations element = new TableAggregations();
+                element.Id = r.First().Id;
                 element.Project = r.First().Project;
                 element.Date = r.First().Date;
                 element.Hours = r.Sum(y => y.Hours);
@@ -279,6 +291,7 @@ namespace WebApplication1.Helpers
 
                         }), o => o.BigTable.Date, u => u.Date, (o, u) => new { SecondJoin = o, EndJoin = u }).Select(x => new
                         {
+                            Id = x.SecondJoin.BigTable.Id,
                             Employee = x.SecondJoin.FirstJoin.Employee,
                             Date = x.EndJoin.Date,
                             Hours = x.SecondJoin.BigTable.Hours
@@ -290,6 +303,7 @@ namespace WebApplication1.Helpers
             foreach (var r in result)
             {
                 TableAggregations element = new TableAggregations();
+                element.Id = r.First().Id;
                 element.Date = r.First().Date;
                 element.Employee = r.First().Employee;
                 element.Hours = r.Sum(y => y.Hours);
@@ -302,17 +316,25 @@ namespace WebApplication1.Helpers
 
         public void UpdateRecord(TableAggregations newRecord)
         {
-            //TO DO
+            var recordToUpdate = _context.TableAggregations.FirstOrDefault(x => x.Id == newRecord.Id);
+
+            recordToUpdate.Id = newRecord.Id;
+            recordToUpdate.Project = newRecord.Project;
+            recordToUpdate.Employee = newRecord.Employee;
+            recordToUpdate.Date = newRecord.Date;
+            recordToUpdate.Hours = newRecord.Hours;
+
+            _context.Entry(recordToUpdate).State = EntityState.Modified;
+            _context.SaveChanges();
         }
 
-        public void DeleteRecord(TableAggregations record)
+        public void DeleteRecord(int id)
         {
-            //var user = _context.TableAggregations.Where(p => p.Employee == record.Employee && p.Project == record.Project && p.Date == record.Date).FirstOrDefault();
+            var record = _context.TableAggregations.FirstOrDefault(x => x.Id == id);
 
-            //_context.Entry(user).State = EntityState.Deleted;
-            //_context.SaveChanges();
+            _context.Entry(record).State = EntityState.Deleted;
+            _context.SaveChanges();
 
-            //TO DO
         }
     }
 }

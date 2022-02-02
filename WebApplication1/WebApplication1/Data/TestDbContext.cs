@@ -12,12 +12,6 @@ namespace WebApplication1.Data
         public TestDbContext(DbContextOptions<TestDbContext> options):base(options){}
 
         public DbSet<TableAggregations> TableAggregations { get; set; }
-
-        protected override void OnModelCreating(ModelBuilder modelBuilder)
-        {
-            modelBuilder.Entity<TableAggregations>().HasNoKey();
-        }
-
     }
 
 

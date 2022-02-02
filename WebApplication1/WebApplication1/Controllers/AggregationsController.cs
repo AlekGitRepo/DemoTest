@@ -33,6 +33,7 @@ namespace WebApplication1.Controllers
         {
 
             TableAggregations record = new TableAggregations();
+            record.Id = request.Id;
             record.Project = request.Project;
             record.Employee = request.Employee;
             record.Date = request.Date;
@@ -79,7 +80,7 @@ namespace WebApplication1.Controllers
             }
         }
 
-        [HttpPut("UpdateUser")]
+        [HttpPut("Update")]
         public IActionResult UpdateUser([FromBody] TableAggregations request)
         {
 
@@ -95,13 +96,13 @@ namespace WebApplication1.Controllers
             return Ok();
         }
 
-        [HttpDelete("DeleteUser")]
+        [HttpDelete("Delete/{id}")]
 
-        public IActionResult DeleteUser([FromBody] TableAggregations request)
+        public IActionResult DeleteUser(int id)
         {
             try
             {
-                _queryAggr.DeleteRecord(request);
+                _queryAggr.DeleteRecord(id);
             }
             catch (Exception e)
             {
