@@ -17,9 +17,6 @@ namespace WebApplication1.Controllers
     [ApiController]
     public class AggregationsController : ControllerBase
     {
-
-        //private TestDbContext _dbContext;
-        //private QueryAggrRepo queryAggr;
         private IQueryAggr _queryAggr;
 
         public AggregationsController(IQueryAggr queryAggr)
@@ -31,6 +28,7 @@ namespace WebApplication1.Controllers
         [HttpPost("CreateRecord")]
         public IActionResult Create([FromBody] TableAggregations request)
         {
+            bool result;
 
             TableAggregations record = new TableAggregations();
             record.Id = request.Id;
@@ -41,7 +39,12 @@ namespace WebApplication1.Controllers
 
             try
             {
-                _queryAggr.CreateRecord(record);
+                result = _queryAggr.CreateRecord(record);
+                if (result == false)
+                {
+                    return StatusCode(404, "No user found");
+                }
+
             }
             catch (Exception e)
             {
@@ -61,20 +64,17 @@ namespace WebApplication1.Controllers
                 if (request.Third != "none")
                 {
                     var aggr3 = _queryAggr.GetAggrByThree(request.First,request.Second,request.Third);
-                    Console.WriteLine("Sono in tre");
                     return Ok(aggr3);
                 }
                 else
                 {
                     var aggr2 = _queryAggr.GetAggrByTwo(request.First, request.Second);
-                    Console.WriteLine("Sono in due");
                     return Ok(aggr2);
                 }
             }
             else
             {
                 var aggr1 = _queryAggr.GetAggrByOne(request.First);
-                Console.WriteLine("Sono in uno");
                 return Ok(aggr1);
 
             }

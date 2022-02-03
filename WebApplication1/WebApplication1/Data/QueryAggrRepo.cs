@@ -17,10 +17,17 @@ namespace WebApplication1.Helpers
             _context = context;
         }
 
-        public void CreateRecord(TableAggregations newRecord)
+        public bool CreateRecord(TableAggregations newRecord)
         {
-            _context.TableAggregations.Add(newRecord);
-            _context.SaveChanges();
+            var recordToUpdate = _context.TableAggregations.Where(x => x.Id == newRecord.Id).ToList();
+
+            if (recordToUpdate.Count == 0)
+            {
+                _context.TableAggregations.Add(newRecord);
+                _context.SaveChanges();
+                return true;
+            }
+            return false;
         }
 
 
@@ -135,6 +142,8 @@ namespace WebApplication1.Helpers
 
         public List<TableAggregations> GetAggrByThree(string param1, string param2, string param3)
         {
+            List<TableAggregations> list = new List<TableAggregations>();
+
             var result = _context.TableAggregations
                          .Join(_context.TableAggregations
                          .GroupBy(x => x.Project)
@@ -170,7 +179,6 @@ namespace WebApplication1.Helpers
 
                         }).ToList().GroupBy(x => new { x.Project, x.Employee, x.Date }).ToList();
 
-            List<TableAggregations> list = new List<TableAggregations>();
 
             foreach (var r in result)
             {
@@ -189,6 +197,8 @@ namespace WebApplication1.Helpers
         
         private List<TableAggregations> GetProjectEmployee()
         {
+            List<TableAggregations> list = new List<TableAggregations>();
+
             var result = _context.TableAggregations
                          .Join(_context.TableAggregations
                          .GroupBy(x => x.Project)
@@ -214,8 +224,6 @@ namespace WebApplication1.Helpers
 
                         }).ToList().GroupBy(x => new { x.Project, x.Employee }).ToList();
 
-            List<TableAggregations> list = new List<TableAggregations>();
-
             foreach (var r in result)
             {
                 TableAggregations element = new TableAggregations();
@@ -231,6 +239,8 @@ namespace WebApplication1.Helpers
         }
         private List<TableAggregations> GetProjectDate()
         {
+            List<TableAggregations> list = new List<TableAggregations>();
+
             var result = _context.TableAggregations
                          .Join(_context.TableAggregations
                          .GroupBy(x => x.Project)
@@ -256,8 +266,6 @@ namespace WebApplication1.Helpers
 
                         }).ToList().GroupBy(x => new { x.Project, x.Date }).ToList();
 
-            List<TableAggregations> list = new List<TableAggregations>();
-
             foreach (var r in result)
             {
                 TableAggregations element = new TableAggregations();
@@ -273,6 +281,8 @@ namespace WebApplication1.Helpers
         }
         private List<TableAggregations> EmployeeDate()
         {
+            List<TableAggregations> list = new List<TableAggregations>();
+
             var result = _context.TableAggregations
                          .Join(_context.TableAggregations
                          .GroupBy(x => x.Employee)
@@ -298,7 +308,6 @@ namespace WebApplication1.Helpers
 
                         }).ToList().GroupBy(x => new { x.Employee, x.Date }).ToList();
 
-            List<TableAggregations> list = new List<TableAggregations>();
 
             foreach (var r in result)
             {

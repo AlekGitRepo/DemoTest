@@ -9,7 +9,7 @@ namespace WebApplication1.Interfaces
 {
     public interface IQueryAggr
     {
-        public void CreateRecord (TableAggregations newRecord);
+        public bool CreateRecord (TableAggregations newRecord);
         public void UpdateRecord(TableAggregations record);
         public void DeleteRecord(int id);
         public List<TableAggregations> GetAggrByOne(string param1);

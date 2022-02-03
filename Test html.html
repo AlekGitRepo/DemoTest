@@ -30,25 +30,51 @@
 <button id="submit">Submit</button>
 
 <table id="table" align = "center" border="1px"></table>
+
+<h1>Oder operation with record</h1>
+<div style="display:flex">
+        <input type="radio" id="cr" name="radio" value="create" checked>
+        <label for="cr">Create</label>
+        <input type="radio" id="up" name="radio" value="update">
+        <label for="up">Update</label>
+        <input type="radio" id="del" name="radio" value="delete">
+        <label for="del">Delete</label>
+</div>
+<div>
+  <h2>Id</h2>
+  <textarea cols=20 rows=1 id="id"></textarea>
+  <h2>Project</h2>
+  <textarea cols=20 rows=1 id="project"></textarea>
+  <h2>Employee</h2>
+  <textarea cols=20 rows=1 id="employee"></textarea>
+  <h2 >Date</h2>
+  <textarea cols=20 rows=1 id="date"></textarea>
+  <h2 >Hours</h2>
+  <textarea cols=20 rows=1 id="hours"></textarea>
+</div>
+
+<button id="go">GO</button>
+
 </body>
 <script>
   var f = document.getElementById("first");
   var s = document.getElementById("second");
   var t = document.getElementById("third");
+  var id = document.getElementById("id");
+  var project =document.getElementById("project");
+  var employee =document.getElementById("employee");
+  var date =document.getElementById("date");
+  var hours =document.getElementById("hours");
+
   var returnValue;
 
   document.getElementById("third").setAttribute("disabled", "disabled");
 
-  var op = s.getElementsByTagName("option");
-    for (var i = 0; i < op.length; i++) {
-    // lowercase comparison for case-insensitivity
-    (op[i].value.toLowerCase() == "project")
-      ? op[i].disabled = true 
-      : op[i].disabled = false ;
-    }
-
   document.getElementById("first").onchange = function () {
     var op = s.getElementsByTagName("option");
+    s.value = 'none';
+    t.value = 'none';
+
     for (var i = 0; i < op.length; i++) {
     // lowercase comparison for case-insensitivity
     (op[i].value.toLowerCase() == f.value)
@@ -58,15 +84,17 @@
   };
 
   document.getElementById("second").onchange = function () {
+    var op = t.getElementsByTagName("option");
+
     if (this.value != 'none')
       document.getElementById("third").removeAttribute("disabled");
     else
       document.getElementById("third").setAttribute("disabled", "disabled");
+      t.value = 'none';
 
-    var op = t.getElementsByTagName("option");
     for (var i = 0; i < op.length; i++) {
     // lowercase comparison for case-insensitivity
-    (op[i].value.toLowerCase() == s.value)
+    (op[i].value.toLowerCase() == s.value || op[i].value.toLowerCase() == f.value)
       ? op[i].disabled = true 
       : op[i].disabled = false ;
     }
@@ -95,11 +123,128 @@
         }
 
     })
+
+
+    document.getElementById('cr').addEventListener('click', () => {
+          document.getElementById("up").checked = false;
+          document.getElementById("del").checked = false;
+
+          hours.disabled = false;
+          hours.style.opacity = 1;
+          project.disabled = false;
+          project.style.opacity = 1;
+          employee.disabled = false;
+          employee.style.opacity = 1;
+          date.disabled = false;
+          date.style.opacity = 1;
+
+      })
+
+    document.getElementById('up').addEventListener('click', () => {
+          document.getElementById("cr").checked = false;
+          document.getElementById("del").checked = false;
+
+          hours.disabled = false;
+          hours.style.opacity = 1;
+          project.disabled = false;
+          project.style.opacity = 1;
+          employee.disabled = false;
+          employee.style.opacity = 1;
+          date.disabled = false;
+          date.style.opacity = 1;
+    })
+
+    document.getElementById('del').addEventListener('click', () => {
+          document.getElementById("cr").checked = false;
+          document.getElementById("up").checked = false;
+
+          hours.disabled = true;
+          hours.style.opacity = 0.1;
+          project.disabled = true;
+          project.style.opacity = 0.1;
+          employee.disabled = true;
+          employee.style.opacity = 0.1;
+          date.disabled = true;
+          date.style.opacity = 0.1;
+    })
+
+    document.getElementById('go').addEventListener('click', () => {
+
+          var result = document.querySelector('input[name="radio"]:checked').value;
+          if(result == 'create'){
+                CreateRecord();
+          }else if(result == 'update'){
+                UpdateRecord();
+          }else if(result == 'delete'){
+                Delete();
+          }
+    })
+
+    function CreateRecord(){
+      let request = new XMLHttpRequest();
+
+          request.open("POST", "https://localhost:44339/api/aggregations/createrecord");
+          request.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+          request.send(
+            JSON.stringify({
+                            id: parseInt(id.value),
+                            project: project.value,
+                            employee: employee.value,
+                            date: date.value,
+                            hours: parseInt(hours.value)
+                        }));
+          request.onload = () => {
+              console.log(request);
+              if(request.status == 200){
+                  console.log("Success");
+              }else{
+                  console.log("Error");
+              }
+          }
+    }
+
+    function UpdateRecord(){
+      let request = new XMLHttpRequest();
+
+          request.open("PUT", "https://localhost:44339/api/aggregations/update");
+          request.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+          request.send(
+            JSON.stringify({
+                            id: parseInt(id.value),
+                            project: project.value,
+                            employee: employee.value,
+                            date: date.value,
+                            hours: parseInt(hours.value)
+                        }));
+          request.onload = () => {
+              console.log(request);
+              if(request.status == 200){
+                  console.log("Success");
+              }else{
+                  console.log("Error");
+              }
+          }
+    }
+
+    function Delete(){
+      let request = new XMLHttpRequest();
+
+            request.open("DELETE", "https://localhost:44339/api/aggregations/delete/"+parseInt(id.value));
+            request.send(null);
+            request.onload = () => {
+                console.log(request);
+                if(request.status == 200){
+                    console.log("Success");
+                }else{
+                    console.log("Error");
+                }
+            }
+    }
      
     function ShowResponse(returnValue) {
         var cols = [];
-        cols.push("id");
 
+        cols.push("id");
         if(f.value != "none")
           cols.push(f.value);
         if(s.value != "none")
@@ -136,7 +281,7 @@
                 cell.innerHTML = returnValue[i][cols[j]];
             }
         }
-         
+
         // Add the newly created table containing json data
         var el = document.getElementById("table");
         el.innerHTML = "";
